@@ -43,9 +43,20 @@ app.use(errorHandler);
 setupWebSocket(server);
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`opendownload running on port ${PORT}`);
-});
+
+async function start() {
+  try {
+    const db = drizzle(pool);
+    await migrate(db, { migrationsFolder: './src/db/migrations' });
+    console.log('Database migrations applied');
+  } catch (err) {
+    console.error('Migration failed:', err.message);
+  }
+
+  server.listen(PORT, () => {
+    console.log(`opendownload running on port ${PORT}`);
+  });
+}
 
 function gracefulShutdown(signal) {
   console.log(`\n${signal} received. Shutting down gracefully...`);
@@ -62,4 +73,4 @@ function gracefulShutdown(signal) {
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-boot();
+start();
