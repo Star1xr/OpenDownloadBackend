@@ -2,12 +2,17 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
+import pg from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { setupWebSocket } from './ws/index.js';
 import { errorHandler } from './utils/errors.js';
 import authRoutes from './routes/auth.js';
 import formatRoutes from './routes/formats.js';
 import downloadRoutes from './routes/downloads.js';
 import accountRoutes from './routes/account.js';
+
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 const app = express();
 const server = http.createServer(app);
@@ -56,3 +61,5 @@ function gracefulShutdown(signal) {
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+boot();
