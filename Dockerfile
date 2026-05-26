@@ -2,6 +2,7 @@ FROM node:22-slim
 
 RUN apt-get update -qq && \
     apt-get install -y -qq --no-install-recommends \
+    python3 \
     curl \
     ca-certificates \
     ffmpeg \
